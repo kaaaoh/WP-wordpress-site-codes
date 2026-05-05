@@ -1,0 +1,15 @@
+<div id="ss-preloader">
+    <div class="loader-content">
+        <div class="text-window">
+            <div id="loader-text-stack">
+                <span class="loader-text">content here</span>
+                <span class="loader-text">content here</span>
+                <span class="loader-text">content here</span>
+                <span class="loader-text">content here</span>
+                <span class="loader-text">content here</span>
+                <span class="loader-text">Lennon Koh</span> 
+            </div>
+        </div>
+        <div class="loader-bar"></div>
+    </div>
+</div>
