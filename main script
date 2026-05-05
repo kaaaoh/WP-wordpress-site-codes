@@ -1,0 +1,100 @@
+<!-- THE FLASH-PROTECTION BLOCK -->
+<script>
+    // Checks immediately if the 'lennon_loader_seen' key exists in the current session.
+    // This runs before the rest of the page loads to prevent the "flicker" of content.
+    if (sessionStorage.getItem('lennon_loader_seen')) {
+        // Adds a class to the <html> tag that the CSS below will use to hide the loader.
+        document.documentElement.classList.add('no-loader');
+    }
+</script>
+
+<style>
+    /* Force-hides the preloader if the 'no-loader' class was added above. */
+    /* !important ensures this overrides any other display settings. */
+    .no-loader #ss-preloader { display: none !important; }
+</style>
+
+<!-- THE MAIN ANIMATION LOGIC -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Stop execution if the user has already seen the loader in this session.
+    if (sessionStorage.getItem('lennon_loader_seen')) return;
+
+    // Define the elements we need to manipulate.
+    const preloader = document.getElementById('ss-preloader');
+    const stack = document.getElementById('loader-text-stack');
+    const words = document.querySelectorAll('.loader-text');
+
+    // Safety check: If the HTML structure is missing, don't run the script to avoid errors.
+    if (!preloader || !stack || words.length === 0) return;
+
+    // The vertical distance (in pixels) the text moves each jump. 
+    // This must match your CSS .loader-text height exactly.
+    const LINE_HEIGHT = 40;
+
+    // Makes the preloader visible and sets up its initial state.
+    preloader.classList.add('is-active');
+
+    // Performance Optimization: Tells the GPU to prepare for an animation on this element.
+    stack.style.willChange = 'transform';
+
+    // 1. TEXT CYCLING LOGIC
+    let currentIndex = 0;
+    // Set a recurring timer to move the text stack every 250ms.
+    const rollInterval = setInterval(() => {
+        if (currentIndex < words.length - 1) {
+            currentIndex++;
+            // Uses translate3d to force hardware acceleration for smoother motion.
+            stack.style.transform = `translate3d(0, -${currentIndex * LINE_HEIGHT}px, 0)`;
+        } else {
+            // Stops the timer once we've rolled through all the words.
+            clearInterval(rollInterval);
+        }
+    }, 250);
+
+    // 2. TIMING CONDITION A: Minimum Display Time
+    // Ensures the brand intro lasts at least 1.2s even on light-speed connections.
+    const minTimePromise = new Promise(resolve => setTimeout(resolve, 1200));
+
+    // 3. TIMING CONDITION B: Actual Asset Loading
+    const pageLoadPromise = new Promise(resolve => {
+        // If the browser already finished loading (cached), resolve immediately.
+        if (document.readyState === 'complete') {
+            resolve();
+        } else {
+            // Listen for the 'load' event (images, scripts, styles are ready).
+            window.addEventListener('load', resolve, { once: true });
+            // Safety fallback: if load event fails, force resolution after 4 seconds.
+            setTimeout(resolve, 4000);
+        }
+    });
+
+    // 4. THE EXIT SEQUENCE
+    // Only runs once BOTH the 1.2s timer AND the page load are finished.
+    Promise.all([minTimePromise, pageLoadPromise]).then(() => {
+        // Ensure the cycling timer is stopped.
+        clearInterval(rollInterval);
+
+        // Instantly snap to the final word in the list (your name).
+        stack.style.transform = `translate3d(0, -${(words.length - 1) * LINE_HEIGHT}px, 0)`;
+        
+        // Optimization: Release the GPU memory hint now that motion is done.
+        stack.style.willChange = 'auto';
+
+        // Brief delay (400ms) so the user can actually read the final word before it exits.
+        setTimeout(() => {
+            // Trigger the CSS transition (the slide-up curtain).
+            preloader.classList.add('loader-hidden');
+            
+            // Log that the loader has been seen so it won't trigger again this session.
+            sessionStorage.setItem('lennon_loader_seen', 'true');
+
+            // Wait specifically for the CSS slide-up transition to finish.
+            preloader.addEventListener('transitionend', () => {
+                // Delete the preloader from the website code to keep the page lightweight.
+                preloader.remove();
+            }, { once: true });
+        }, 400);
+    });
+});
+</script>
