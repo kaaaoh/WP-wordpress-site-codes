@@ -53,6 +53,7 @@
     letter-spacing: 2px; /* Slightly tighter for speed */
     text-transform: uppercase;
     text-align: center;
+}
 
 /* 6. THE ACCENT BAR */
 .loader-bar {
@@ -60,3 +61,4 @@
     height: 2px;
     background: #ffffff;
     margin: 10px auto 0;
+}
