@@ -1,3 +1,4 @@
+/* 1. THE MAIN CONTAINER */
 #ss-preloader {
     position: fixed;
     top: 0;
@@ -18,17 +19,22 @@
     display: flex;
 }
 
+/* 2. THE SLIDE-UP ANIMATION */
 .loader-hidden {
     transform: translateY(-100%);
 }
 
-/* The window that only shows one line at a time */
+/* 3. THE DYNAMIC WINDOW */
+/* We use 'em' so the window height is always relative to the font size */
 .text-window {
-    height: 40px; /* Adjust based on your font size */
+    /* Instead of height: 40px, we use a 'Line Clamp' approach 
+       or simply ensure it matches the height of one span */
+    height: 1.2em; /* This makes the window height relative to the font size */
     overflow: hidden;
     position: relative;
 }
 
+/* 4. THE ROLLING STACK */
 #loader-text-stack {
     display: flex;
     flex-direction: column;
@@ -36,9 +42,10 @@
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
+/* 5. THE TEXT STYLING */
 .loader-text {
-    height: 40px; 
-    line-height: 40px;
+    height: auto; /* Height: auto allows the JS to measure the real offsetHeight */
+    line-height: 1.2; /* relative value, adjusts to screen size */
     color: #ffffff;
     font-family: 'Inter', sans-serif;
     font-weight: 900; /* Extra bold for snappiness */
@@ -47,6 +54,7 @@
     text-transform: uppercase;
     text-align: center;
 
+/* 6. THE ACCENT BAR */
 .loader-bar {
     width: 60px;
     height: 2px;
