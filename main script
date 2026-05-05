@@ -28,9 +28,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Safety check: If the HTML structure is missing, don't run the script to avoid errors.
     if (!preloader || !stack || words.length === 0) return;
 
-    // The vertical distance (in pixels) the text moves each jump. 
-    // This must match your CSS .loader-text height exactly.
-    const LINE_HEIGHT = 40;
+    // Dynamically calculate height based on the first word's actual size
+    const getStepHeight = () => words[0].offsetHeight;
+    let stepHeight = getStepHeight();
 
     // Makes the preloader visible and sets up its initial state.
     preloader.classList.add('is-active');
@@ -76,7 +76,9 @@ document.addEventListener('DOMContentLoaded', function () {
         clearInterval(rollInterval);
 
         // Instantly snap to the final word in the list (your name).
-        stack.style.transform = `translate3d(0, -${(words.length - 1) * LINE_HEIGHT}px, 0)`;
+        // changed to use stepheight final measurement check in case of window resize/load shifts
+        stepHeight = getStepHeight();
+        stack.style.transform = `translate3d(0, -${(words.length - 1) * stepHeight}px, 0)`;
         
         // Optimization: Release the GPU memory hint now that motion is done.
         stack.style.willChange = 'auto';
